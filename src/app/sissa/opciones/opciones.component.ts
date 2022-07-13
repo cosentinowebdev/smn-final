@@ -11,24 +11,47 @@ export class OpcionesComponent implements OnInit {
   idTipo: any;
   idEndpoint: any;
   formGroup!: FormGroup;
+  valoresFormGroup: any;
 
   constructor(public route: ActivatedRoute,
     private _formBuilder: FormBuilder) {
     this.route.params.forEach((params: Params) => {
-      console.table(params);
+      
       this.idTipo = params["idTipo"];
       this.idEndpoint = params["idEndpoint"];
+      console.table(this.idEndpoint);
+      switch (this.idEndpoint) {
+        case "prueba-ruster":
+          this.formGroup = this._formBuilder.group({
+            campoPrueba:  ['algo',Validators.required],
+            otroCampoPrueba:  ['algo',Validators.required],
+          });
+          console.log("prueba ruster");
+          break;
+        case "prueba-geojson":
+          this.formGroup = this._formBuilder.group({
+            campoPrueba:  ['algo',Validators.required],
+            otroCampoPrueba:  ['algo',Validators.required],
+          });
+          console.log("prueba geojson");
+          break;
+        default:
+          this.formGroup = this._formBuilder.group({
+            campoPrueba:  ['algo',Validators.required],
+            otroCampoPrueba:  ['algo',Validators.required],
+          });
+          console.log("default");
+          break;
+      }
     });
    }
 
   ngOnInit(): void {
-    this.formGroup = this._formBuilder.group({
-      campoPrueba:  ['',Validators.required],
-      otroCampoPrueba:  ['',Validators.required],
-    })
+
+
   }
   onSubmit(): void{
-    alert("algo");
+    this.valoresFormGroup = this.formGroup.value
   }
 
 }

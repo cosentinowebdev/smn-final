@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
 import * as L from 'leaflet';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
@@ -10,7 +10,20 @@ import 'leaflet-draw';
 import { Location } from '@angular/common';
 import { parametro } from '../../modelos/parametro';
 
-
+const iconRetinaUrl = 'assets/marker-icon-2x.png';
+const iconUrl = 'assets/marker-icon.png';
+const shadowUrl = 'assets/marker-shadow.png';
+const iconDefault = L.icon({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
   selector: 'app-map',
@@ -19,6 +32,7 @@ import { parametro } from '../../modelos/parametro';
 })
 export class MapaComponent implements AfterViewInit {
 
+  @Input() data:any;
   private map: any;
   geotiffUrl: String = "";
   georasterObj: any;
@@ -50,45 +64,112 @@ export class MapaComponent implements AfterViewInit {
   constructor(private sissaInfoService: SissaInfoService,
     public route: ActivatedRoute) {
     this.route.params.forEach((params: Params) => {
-      console.table(params);
+
       this.idTipo = params["idTipo"];
       this.idEndpoint = params["idEndpoint"];
+
     });
    }
 
 
   ngOnInit(): void {
-    // this.uploadService.geotiffUrl.subscribe(url => {
-    //   this.geotiffUrl = url;
-    //   this.loadGeotiffAsLayer("http://127.0.0.1:8000/");
-    //   this.map.on("click", (e: any) => {
-    //     this.getElevation(e);
-    //   });
-    // });
-    this.sissaInfoService.getRuster().subscribe(
-      res=>{
-        console.log(res.parametros);
+    console.log("data");
+    console.log(this.data);
+    this.llamaServicio(this.data);
+  }
+  llamaServicio(data:any){
+    switch (this.idEndpoint) {
+      case 'prueba-ruster':
+          this.sissaInfoService.getRuster().subscribe(
+            res=>{
+                    
+              res.parametros.forEach((element: any) => {
+                let paramet = new parametro(element)
+                this.parametros.push(paramet)
+              });
+              const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
+              console.log(this.parametros);
+              var blobURL = URL.createObjectURL(preblob);
+              console.log(blobURL);
+              this.loadGeotiffAsLayer(blobURL);
+              
+            }
+          );
+        break;
+      
+      case 'prueba-geojson':
+          this.sissaInfoService.getGeojson().subscribe(arg => {
+            console.log(arg);
+            let res:any = arg.geojson;
+            for (const c of res.features) {
+              const lon = c.geometry.coordinates[0];
+              const lat = c.geometry.coordinates[1];
+              const circle = L.circleMarker([lat, lon]);
+      
+              circle.addTo(this.map);
+            }
+            
+          });
+           
+        break;
 
-        res.parametros.forEach((element: any) => {
-          let paramet = new parametro(element)
-          this.parametros.push(paramet)
-        });
-        const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
-        console.log(this.parametros);
-        var blobURL = URL.createObjectURL(preblob);
-        console.log(blobURL);
-        this.loadGeotiffAsLayer(blobURL);
+      default:
+        this.sissaInfoService.getRuster().subscribe(
+          res=>{
+                  
+            res.parametros.forEach((element: any) => {
+              let paramet = new parametro(element)
+              this.parametros.push(paramet)
+            });
+            const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
+            console.log(this.parametros);
+            var blobURL = URL.createObjectURL(preblob);
+            console.log(blobURL);
+            this.loadGeotiffAsLayer(blobURL);
+            
+          }
+        );
         
-      }
-      )
-    
+        break;
+    }
   }
 
+  ngOnChanges(changes: any) {
+    console.log("cambio");
+    
+    if (this.map) {
+    
+      console.log(changes);
+      this.map.remove();
+      this.initMap();
+      console.log("ok");
+      this.llamaServicio(changes)
+      // this.sissaInfoService.getRuster().subscribe(
+      //   res=>{
+      //     console.log(res.parametros);
+
+      //     res.parametros.forEach((element: any) => {
+      //       let paramet = new parametro(element)
+      //       this.parametros.push(paramet)
+      //     });
+      //     const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
+      //     console.log(this.parametros);
+      //     var blobURL = URL.createObjectURL(preblob);
+      //     console.log(blobURL);
+      //     this.loadGeotiffAsLayer(blobURL);
+          
+      //   }
+      //   );
+      console.log("ok");
+
+    }
+    
+  } 
 
   private initMap(): void {
-    this.map = L.map('map').setView([55.789, -1.729], 5);
-    const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    this.map = L.map('map').setView([-22, -57], 5);
+    const tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
+      attribution: '&copy; smn contributors'
     });
     // const drawControl = new L.Control.Draw(this.drawOptions);
  

@@ -3,18 +3,18 @@
     <form [formGroup]="formGroup">
         <ng-container *ngIf="idEndpoint == 'prueba-ruster'">
             <mat-form-field class="example-full-width" appearance="fill" style="background-color: white;">
-                <mat-label>un input</mat-label>
-                <input matInput placeholder="un ejemplo" value="ejemplo">
+                <mat-label>un input ruster</mat-label>
+                <input matInput placeholder="un ejemplo" value="ejemplo" formControlName="campoPrueba">
             </mat-form-field> 
             <mat-form-field class="example-full-width" appearance="fill" style="background-color: white;">
-                <mat-label>un input</mat-label>
-                <input matInput placeholder="un ejemplo" value="ejemplo">
+                <mat-label>un input </mat-label>
+                <input matInput placeholder="un ejemplo" value="ejemplo" formControlName="otroCampoPrueba">
             </mat-form-field> 
             <button mat-button (click)="onSubmit()">Basic</button>
         </ng-container>
         <ng-container *ngIf="idEndpoint == 'prueba-geojson'">
             <mat-form-field class="example-full-width" appearance="fill" style="background-color: white;">
-                <mat-label>un input</mat-label>
+                <mat-label>un input geojson</mat-label>
                 <input matInput placeholder="un ejemplo" value="ejemplo">
             </mat-form-field> 
             <mat-form-field class="example-full-width" appearance="fill" style="background-color: white;">
@@ -28,4 +28,4 @@
     <br>
     
 </div>
-<app-map></app-map>
+<app-map [data]="valoresFormGroup"></app-map>

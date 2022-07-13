@@ -11,6 +11,7 @@ import { catchError, tap } from 'rxjs/operators';
 export class SissaInfoService {
 
 
+
   map = new BehaviorSubject<any>(null);
   colorScale = new Subject();
   histogram = new Subject();
@@ -22,7 +23,6 @@ export class SissaInfoService {
   */
   getRuster() {
     var url = '/tiff64';
-    var data = {username: 'example'};
     return this.http
     .get<any>(
     `${environment.apiUrl}${url}`)
@@ -30,6 +30,20 @@ export class SissaInfoService {
         tap((res: any) => {
             if (res) {
                 console.log(res.parametros);
+                
+            }
+        })
+    );
+  }
+  getGeojson() {
+    var url = '/return-geojson';
+    return this.http
+    .get<any>(
+    `${environment.apiUrl}${url}`)
+    .pipe(
+        tap((res: any) => {
+            if (res) {
+                console.log(res);
                 
             }
         })
