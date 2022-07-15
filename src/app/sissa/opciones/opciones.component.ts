@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from  '@angular/forms' ;
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-opciones',
@@ -19,27 +20,31 @@ export class OpcionesComponent implements OnInit {
       
       this.idTipo = params["idTipo"];
       this.idEndpoint = params["idEndpoint"];
-      console.table(this.idEndpoint);
+      console.log(this.idTipo);
+      console.log(this.idEndpoint);
       switch (this.idEndpoint) {
         case "prueba-ruster":
           this.formGroup = this._formBuilder.group({
             campoPrueba:  ['algo',Validators.required],
             otroCampoPrueba:  ['algo',Validators.required],
           });
-          console.log("prueba ruster");
+          this.valoresFormGroup = this.formGroup.value;
           break;
         case "prueba-geojson":
+          const fecha = new Date();
+          console.log(fecha);
           this.formGroup = this._formBuilder.group({
-            campoPrueba:  ['algo',Validators.required],
-            otroCampoPrueba:  ['algo',Validators.required],
+            cantidadPrecipitaciones:  [0,Validators.required],
+            fecha:  [formatDate(fecha, 'yyyy-MM-dd', 'en'),Validators.required],
           });
-          console.log("prueba geojson");
+          this.valoresFormGroup = this.formGroup.value;
           break;
         default:
           this.formGroup = this._formBuilder.group({
             campoPrueba:  ['algo',Validators.required],
             otroCampoPrueba:  ['algo',Validators.required],
           });
+          this.valoresFormGroup = this.formGroup.value;
           console.log("default");
           break;
       }
@@ -51,7 +56,7 @@ export class OpcionesComponent implements OnInit {
 
   }
   onSubmit(): void{
-    this.valoresFormGroup = this.formGroup.value
+    this.valoresFormGroup = this.formGroup.value;
   }
 
 }

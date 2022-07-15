@@ -21,15 +21,15 @@ export class SissaInfoService {
   /*
   * este ehdwwjkldajskldjkashdklj
   */
-  getRuster() {
-    var url = '/tiff64';
+  getRaster() {
+    var url = '/return-ruster';
     return this.http
     .get<any>(
     `${environment.apiUrl}${url}`)
     .pipe(
         tap((res: any) => {
             if (res) {
-                console.log(res.parametros);
+                // console.log(res.parametros);
                 
             }
         })
@@ -43,7 +43,7 @@ export class SissaInfoService {
     .pipe(
         tap((res: any) => {
             if (res) {
-                console.log(res);
+                // console.log(res);
                 
             }
         })

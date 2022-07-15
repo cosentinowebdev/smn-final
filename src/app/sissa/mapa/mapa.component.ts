@@ -67,101 +67,136 @@ export class MapaComponent implements AfterViewInit {
 
       this.idTipo = params["idTipo"];
       this.idEndpoint = params["idEndpoint"];
-
+      console.log(this.idTipo);
+      console.log(this.idEndpoint);
+      if (this.map) {
+        this.map.remove();
+        this.initMap();
+      }
+      
+      // this.llamaServicio(this.data);
     });
+    
+
    }
 
 
   ngOnInit(): void {
-    console.log("data");
-    console.log(this.data);
-    this.llamaServicio(this.data);
+    // console.log("data");
+    // console.log(this.data);
+    // this.llamaServicio(this.data);
   }
   llamaServicio(data:any){
+    console.log("llamaServicio");
+    console.log(this.idEndpoint);
     switch (this.idEndpoint) {
       case 'prueba-ruster':
-          this.sissaInfoService.getRuster().subscribe(
-            res=>{
-                    
-              res.parametros.forEach((element: any) => {
-                let paramet = new parametro(element)
-                this.parametros.push(paramet)
-              });
-              const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
-              console.log(this.parametros);
-              var blobURL = URL.createObjectURL(preblob);
-              console.log(blobURL);
-              this.loadGeotiffAsLayer(blobURL);
-              
-            }
-          );
+        this.sissaInfoService.getRaster().subscribe(arg =>{
+          console.log(arg.geotiff);
+          this.parametros=[];
+          arg.legend.forEach((element: any) => {
+            let paramet = new parametro(element)
+            this.parametros.push(paramet)
+          });
+          console.log(arg.legend);
+          
+          console.log(this.parametros);
+          
+          const preblob = this.converBase64toBlob(arg.geotiff,'image/tiff');
+          var blobURL = URL.createObjectURL(preblob);
+          this.loadGeotiffAsLayer(blobURL);
+          this.agregarLeyenda(this.parametros,"Categoría de sequía");
+        })
         break;
       
       case 'prueba-geojson':
+        //feat geo
           this.sissaInfoService.getGeojson().subscribe(arg => {
-            console.log(arg);
             let res:any = arg.geojson;
+            this.parametros=[];
+            arg.legend.forEach((element: any) => {
+              let paramet = new parametro(element)
+              this.parametros.push(paramet)
+            });
+            let color:string[] = [];
+
+            this.parametros.forEach(element => {
+              for (let index = element.desde; index < element.hasta; index++) {
+                color.push(element.color)
+              }
+            });
+            console.log(color);
+            var colors = d3.scaleQuantize<string, number>()
+            .domain([0,60])
+            .range(color.reverse());
+
             for (const c of res.features) {
               const lon = c.geometry.coordinates[0];
               const lat = c.geometry.coordinates[1];
               const circle = L.circleMarker([lat, lon]);
-      
-              circle.addTo(this.map);
+
+              if (c.properties.dias_secos>data.cantidadPrecipitaciones) {
+                circle.setStyle({fillColor:colors(c.properties.dias_secos).toString(),fillOpacity:0.7,color:"#000",weight:1});
+                circle.addTo(this.map);
+              }
+
+              
             }
-            
+            this.agregarLeyenda(this.parametros,"Dias sin lluvia");
           });
            
         break;
 
       default:
-        this.sissaInfoService.getRuster().subscribe(
+        this.sissaInfoService.getRaster().subscribe(
           res=>{
-                  
+            console.log(res);
+            this.parametros=[];
             res.parametros.forEach((element: any) => {
               let paramet = new parametro(element)
               this.parametros.push(paramet)
             });
             const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
-            console.log(this.parametros);
             var blobURL = URL.createObjectURL(preblob);
-            console.log(blobURL);
             this.loadGeotiffAsLayer(blobURL);
-            
+            this.agregarLeyenda(this.parametros,"error");
           }
         );
         
-        break;
+      break;
+        
     }
+  }
+  addColorPuntosGeoJson(res:any){
+    let color:string[] = [];
+    this.parametros=[];
+    this.parametros.forEach(element => {
+      for (let index = element.desde; index < element.hasta; index++) {
+        color.push(element.color)
+      }
+    });
+
+    var colors = d3.scaleQuantize<string, number>()
+    .domain([0,60])
+    .range(color.reverse());
+    return colors;
   }
 
   ngOnChanges(changes: any) {
-    console.log("cambio");
+    
     
     if (this.map) {
-    
-      console.log(changes);
+      console.log(changes.data.currentValue);
+      console.log(document.getElementsByClassName("legend"));
+      const elementoHTML:HTMLElement = document.getElementsByClassName("legend")[0] as HTMLElement;
+      elementoHTML.remove();
       this.map.remove();
       this.initMap();
-      console.log("ok");
-      this.llamaServicio(changes)
-      // this.sissaInfoService.getRuster().subscribe(
-      //   res=>{
-      //     console.log(res.parametros);
-
-      //     res.parametros.forEach((element: any) => {
-      //       let paramet = new parametro(element)
-      //       this.parametros.push(paramet)
-      //     });
-      //     const preblob = this.converBase64toBlob(res.fileTiff,'image/tiff');
-      //     console.log(this.parametros);
-      //     var blobURL = URL.createObjectURL(preblob);
-      //     console.log(blobURL);
-      //     this.loadGeotiffAsLayer(blobURL);
-          
-      //   }
-      //   );
-      console.log("ok");
-
+      this.llamaServicio(changes.data.currentValue);
+    }else{
+      console.log(changes.data.currentValue);
+      this.initMap();
+      this.llamaServicio(changes.data.currentValue);
     }
     
   } 
@@ -171,15 +206,26 @@ export class MapaComponent implements AfterViewInit {
     const tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}.png', {
       attribution: '&copy; smn contributors'
     });
+     if (document.getElementsByClassName("legend")[0]) {
+       const elementoHTML:HTMLElement = document.getElementsByClassName("legend")[0] as HTMLElement;
+       L.DomUtil.remove(elementoHTML);
+     }
     // const drawControl = new L.Control.Draw(this.drawOptions);
  
     // this.map.addControl(drawControl);
     tiles.addTo(this.map);
+
+  }
+  agregarLeyenda(parametros:parametro[],titulo:string):void{
+
     var legend = L.control.attribution({position: 'bottomright'}); // L.control({position: 'bottomright'})
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML = '<h4>Valores</h4><br>';
-        div.innerHTML += '<p>esto es un texto</p>';
+        div.innerHTML = '<h3>'+titulo+'</h3>';
+        parametros.forEach(element => {
+          div.innerHTML += '<i style="background:'+element.color+';opacity:1;padding-left:14px;"></i>'+element.desc+'<br>';
+        });
+        
         div.id = "leyenda";
         return div;
     };
@@ -188,7 +234,6 @@ export class MapaComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.sissaInfoService.getRuster();
   }
 
   loadGeotiffAsLayer(url: any): void {
@@ -214,25 +259,28 @@ export class MapaComponent implements AfterViewInit {
   }
 
   updateMapLayer(raster: any, opacity: any) {
-    console.log(raster.mins[0]);
-    console.log( raster.maxs[0]);
-        const colores:number[]= [0x5E4FA2, 0x3288BD, 0x66C2A5, 0xABDDA4, 0xE6F598, 
-      0xFFFFBF, 0xFEE08B, 0xFDAE61, 0xF46D43, 0xD53E4F, 0x9E0142];
+
+    let color:string[] = [];
+    this.parametros=[];
+    this.parametros.forEach(element => {
+      for (let index = element.desde; index < element.hasta; index++) {
+        color.push(element.color)
+      }
+    });
+
     var colors = d3.scaleQuantize<string, number>()
     .domain([0,60])
-    .range(["#ffffff","#EAB2BB","#CF1735","#E60026","#C70021","#B3001E",]);
+    .range(color.reverse());
     let scale = d3.scaleSequential(d3.interpolateOrRd);
     console.log(scale);
     this.colorScale = scale;
     var layer = new GeoRasterLayer({
       georaster: raster,
-      opacity: opacity,
+      opacity: 0.6,
       resolution: 256,
       pixelValuesToColorFn: function (values): any {
-        // console.log(values[0]);
-        var pixel = values[0];
-        if (pixel < 0) return;
-        
+        var pixel = values[0];    
+        if (pixel < 0) return;        
         return colors(pixel);
       }
     });
@@ -240,6 +288,7 @@ export class MapaComponent implements AfterViewInit {
     this.rasterGroup.addTo(this.map);
     layer.addTo(this.rasterGroup);
     this.map.fitBounds(layer.getBounds());
+    
   }
 
   getElevation(event: any){
