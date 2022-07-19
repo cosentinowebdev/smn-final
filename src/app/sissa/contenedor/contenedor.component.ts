@@ -9,23 +9,23 @@ import { ListaSolapas } from 'src/app/modelos/listaSolapas';
 })
 export class ContenedorComponent implements OnInit {
   listaSolapasComoEstamos:ListaSolapas[] =[
-    {"url":"url","nombre":"¿Hace cuánto que no llueve?","activo":false},
-    {"url":"url","nombre":"¿Qué estaciones están en sequía?","activo":false},
-    {"url":"url","nombre":"¿En qué estaciones llovió mucho?","activo":false},
-    {"url":"url","nombre":"¿Qué zonas están en sequía?","activo":false},
-    {"url":"url","nombre":"¿En qué zonas llovió mucho?","activo":false},
-    {"url":"url","nombre":"¿Cuánta área está en sequía?","activo":false},
-    {"url":"url","nombre":"Comparación de sequías entre dos períodos","activo":false},
-    {"url":"url","nombre":"Evolución de sequías entre dos períodos","activo":false}
+    {"url":"sissa/como-estamos/hace-cuanto-no-llueve","nombre":"¿Hace cuánto que no llueve?","activo":false,"clasesCss":"primero"},
+    {"url":"url","nombre":"¿Qué estaciones están en sequía?","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"¿En qué estaciones llovió mucho?","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"¿Qué zonas están en sequía?","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"¿En qué zonas llovió mucho?","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"¿Cuánta área está en sequía?","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Comparación de sequías entre dos períodos","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Evolución de sequías entre dos períodos","activo":false,"clasesCss":"ultimo"}
   ];
   listaSolapasIndicesDeSequia:ListaSolapas[] =[
-    {"url":"url","nombre":"Resumen","activo":false},
-    {"url":"url","nombre":"Series temporales","activo":false},
-    {"url":"url","nombre":"Mapas de calor","activo":false},
-    {"url":"url","nombre":"Mapas","activo":false},
-    {"url":"url","nombre":"Eventos","activo":false},
-    {"url":"url","nombre":"Rankings","activo":false},
-    {"url":"url","nombre":"Ayuda","activo":false}
+    {"url":"url","nombre":"Resumen","activo":false,"clasesCss":"primero"},
+    {"url":"url","nombre":"Series temporales","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Mapas de calor","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Mapas","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Eventos","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Rankings","activo":false,"clasesCss":"contenido"},
+    {"url":"url","nombre":"Ayuda","activo":false,"clasesCss":"ultimo"}
 
   ];
   listaSolapas:ListaSolapas[]=[];

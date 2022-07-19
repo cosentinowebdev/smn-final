@@ -35,6 +35,21 @@ export class SissaInfoService {
         })
     );
   }
+  haceCuantoQueNoLLueve(fecha:any,minPrec:number){
+    // /informes/como-estamos/hace-cuanto-que-no-llueve/
+    var url = '/informes/como-estamos/hace-cuanto-que-no-llueve/';
+    return this.http
+    .get<any>(
+    `${environment.apiUrl}${url}${fecha}/${minPrec}`)
+    .pipe(
+        tap((res: any) => {
+            if (res) {
+                // console.log(res);
+                
+            }
+        })
+    );
+  }
   getGeojson() {
     var url = '/return-geojson';
     return this.http

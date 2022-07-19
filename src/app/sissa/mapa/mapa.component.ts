@@ -60,6 +60,8 @@ export class MapaComponent implements AfterViewInit {
   parametros: parametro[]=[];
   idTipo: any;
   idEndpoint: any;
+  modal: any;
+
 
   constructor(private sissaInfoService: SissaInfoService,
     public route: ActivatedRoute) {
@@ -71,9 +73,9 @@ export class MapaComponent implements AfterViewInit {
       console.log(this.idEndpoint);
       if (this.map) {
         this.map.remove();
-        this.initMap();
+        // this.initMap();
       }
-      
+
       // this.llamaServicio(this.data);
     });
     
@@ -85,6 +87,8 @@ export class MapaComponent implements AfterViewInit {
     // console.log("data");
     // console.log(this.data);
     // this.llamaServicio(this.data);
+    this.modal = document.getElementById("modal");
+    this.modal.style.display = "block";
   }
   llamaServicio(data:any){
     console.log("llamaServicio");
@@ -106,6 +110,7 @@ export class MapaComponent implements AfterViewInit {
           var blobURL = URL.createObjectURL(preblob);
           this.loadGeotiffAsLayer(blobURL);
           this.agregarLeyenda(this.parametros,"Categoría de sequía");
+          this.modal.style.display = "none";
         })
         break;
       
@@ -143,8 +148,48 @@ export class MapaComponent implements AfterViewInit {
               
             }
             this.agregarLeyenda(this.parametros,"Dias sin lluvia");
+            this.modal.style.display = "none";
           });
            
+        break;
+
+      case 'hace-cuanto-no-llueve':
+        //feat geo
+          this.sissaInfoService.haceCuantoQueNoLLueve(data.fecha,data.cantidadPrecipitaciones).subscribe(arg => {
+            let res:any = arg.geojson;
+            this.parametros=[];
+            arg.legend.forEach((element: any) => {
+              let paramet = new parametro(element)
+              this.parametros.push(paramet)
+            });
+            let color:string[] = [];
+
+            this.parametros.forEach(element => {
+              for (let index = element.desde; index < element.hasta; index++) {
+                color.push(element.color)
+              }
+            });
+            console.log(color);
+            var colors = d3.scaleQuantize<string, number>()
+            .domain([0,60])
+            .range(color.reverse());
+
+            for (const c of res.features) {
+              const lon = c.geometry.coordinates[0];
+              const lat = c.geometry.coordinates[1];
+              const circle = L.circleMarker([lat, lon]);
+
+              if (c.properties.dias_secos>data.cantidadPrecipitaciones) {
+                circle.setStyle({fillColor:colors(c.properties.dias_secos).toString(),fillOpacity:0.7,color:"#000",weight:1});
+                circle.addTo(this.map);
+              }
+
+              
+            }
+            this.agregarLeyenda(this.parametros,"Dias sin lluvia");
+            this.modal.style.display = "none";
+          });
+            
         break;
 
       default:
@@ -160,6 +205,7 @@ export class MapaComponent implements AfterViewInit {
             var blobURL = URL.createObjectURL(preblob);
             this.loadGeotiffAsLayer(blobURL);
             this.agregarLeyenda(this.parametros,"error");
+            this.modal.style.display = "none";
           }
         );
         
@@ -233,7 +279,7 @@ export class MapaComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.initMap();
+    // this.initMap();
   }
 
   loadGeotiffAsLayer(url: any): void {

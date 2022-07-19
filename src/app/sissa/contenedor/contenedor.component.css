@@ -1,0 +1,9 @@
+.primero{
+    border-radius: 15px 0 0 15px ;
+}
+.contenido{
+    border-radius: 0 0 0 0 ;
+}
+.ultimo{
+    border-radius: 0 15px 15px 0 ;
+}

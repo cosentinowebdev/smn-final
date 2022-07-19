@@ -33,7 +33,26 @@
                 <button mat-stroked-button (click)="onSubmit()" style="background-color: aliceblue;">Visualizar</button>
             </form>
         </ng-container>
-
+        <ng-container *ngIf="idEndpoint == 'hace-cuanto-no-llueve'">
+            <form [formGroup]="formGroup" class="container">
+                <p>Seleccione la fecha de referencia para calcular días sin lluvia. Haga click sobre la misma para desplegar el calendario</p>
+                <mat-form-field class="" appearance="fill" style="">
+                    <mat-label>Fecha de Referencia</mat-label>
+                    <input type="date" formControlName="fecha" matInput placeholder="un ejemplo" value="">
+                </mat-form-field> 
+                <p>Indique el monto mínimo de precipitación diaria para que un día se considere lluvioso</p>
+                <mat-form-field appearance="fill">
+                    <mat-select formControlName="cantidadPrecipitaciones">
+                    <mat-option [value]="0.1">Más de 0.1 mm</mat-option>
+                    <mat-option [value]="1">Más de 1 mm</mat-option>
+                    <mat-option [value]="3">Más de 3 mm</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br>
+                <button mat-stroked-button (click)="onSubmit()" style="background-color: aliceblue;">Visualizar</button>
+            </form>
+        </ng-container>
+        
     <br>
     
 </div>

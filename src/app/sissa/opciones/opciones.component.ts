@@ -30,6 +30,17 @@ export class OpcionesComponent implements OnInit {
           });
           this.valoresFormGroup = this.formGroup.value;
           break;
+        case "hace-cuanto-no-llueve":
+          const fecha2 = new Date();
+          console.log(fecha2);
+          this.formGroup = this._formBuilder.group({
+            cantidadPrecipitaciones:  [0.1,Validators.required],
+            // fecha:  [formatDate(fecha2, 'yyyy-MM-dd', 'en'),Validators.required],
+            fecha:["2022-06-21",Validators.required]
+            // 2022-06-21
+          });
+          this.valoresFormGroup = this.formGroup.value;
+          break;
         case "prueba-geojson":
           const fecha = new Date();
           console.log(fecha);
