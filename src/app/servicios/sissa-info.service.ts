@@ -12,6 +12,7 @@ export class SissaInfoService {
 
 
 
+
   map = new BehaviorSubject<any>(null);
   colorScale = new Subject();
   histogram = new Subject();
@@ -50,6 +51,25 @@ export class SissaInfoService {
         })
     );
   }
+
+  //metodos de esi
+
+  // // /informes/esi/fechas-disponibles/valores_esi/4
+  getFechasDisponiblesESI(escala: number, producto: string) {
+    var url = '/informes/esi/fechas-disponibles/';
+    return this.http
+    .get<any>(
+    `${environment.apiUrl}${url}${producto}/${escala}`)
+    .pipe(
+        tap((res: any) => {
+            if (res) {
+                // console.log(res);
+                
+            }
+        })
+    );
+  }
+
   getGeojson() {
     var url = '/return-geojson';
     return this.http

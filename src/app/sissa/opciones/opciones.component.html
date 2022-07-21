@@ -52,6 +52,51 @@
                 <button mat-stroked-button (click)="onSubmit()" style="background-color: aliceblue;">Visualizar</button>
             </form>
         </ng-container>
+        <ng-container *ngIf="idEndpoint == 'un-periodo-esi'">
+            <form [formGroup]="formGroup">
+                  
+                <mat-form-field appearance="fill">
+                    <mat-select formControlName="producto">
+                        <mat-option value="total">Totales de precipitación</mat-option>
+                        <mat-option value="anomalies">Anomalías de precipitación (mm) n</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-select formControlName="escala">
+                      <mat-option [value]="3">3</mat-option>
+                      <mat-option [value]="6">6</mat-option>
+                      <mat-option [value]="12">12</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <br>
+                  <mat-radio-group formControlName="tipoVisualizacion" style="display:flex; flex-direction:column;">
+                    <mat-radio-button value="fecha">Solamente un período</mat-radio-button>
+                    <mat-radio-button value="comparacion">Comparación de dos períodos</mat-radio-button>
+                    <mat-radio-button value="animacion">Secuencia animada de varios períodos</mat-radio-button>
+                  </mat-radio-group>
+                  <br>
+                  <mat-form-field appearance="fill">
+                    <mat-select formControlName="ano">
+                      <mat-option [value]="2022">2022</mat-option>
+                      <mat-option [value]="2021">2021</mat-option>
+                      <mat-option [value]="2020">2020</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-select formControlName="periodo">
+                        <ng-container *ngFor="let item of listaFechas; let i=index;">
+                            <mat-option *ngIf="i==0" [value]="item.fecha" selected> {{item.periodo}}</mat-option>
+                            <mat-option *ngIf="i!=0" [value]="item.fecha"> {{item.periodo}}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                  </mat-form-field>
+                  <ng-container *ngIf="formGroup.controls['tipoVisualizacion'].value=='comparacion'">
+                    <p>Seleccione el período contra el cual desea comparar:</p>
+                  </ng-container>
+                  
+                <button mat-stroked-button (click)="onSubmit()" style="background-color: aliceblue;">Visualizar</button>
+            </form>
+        </ng-container>
         
     <br>
     

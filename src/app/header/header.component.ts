@@ -7,12 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
   monitoreo=[
-    {url:"sissa/informes/como-estamos/",nombre:"ESTADO ACTUAL DE LA SEQUÍA"},
-    {url:"sissa/monitoreo/indices-de-sequia",nombre:"Índices de sequía "},
-    {url:"sissa/monitoreo/precipitacion-estimada-por-satelite",nombre:"Estimaciones de precipitación"},
-    {url:"sissa/monitoreo/prueba-ruster",nombre:'prueba-ruster'},
-    {url:"sissa/monitoreo/prueba-geojson",nombre:'prueba-geojson'},
-    {url:"sissa/como-estamos/hace-cuanto-no-llueve",nombre:"ESTADO ACTUAL DE LA SEQUIA"}
+    {url:"sissa/como-estamos/hace-cuanto-no-llueve",nombre:"ESTADO ACTUAL DE LA SEQUIA"},
+    {url:"sissa/esi/un-periodo-esi",nombre:"Precipitación estimada por datos de satélite y observaciones in situ (CHIRPS)"}
   ];
   constructor() { }
 

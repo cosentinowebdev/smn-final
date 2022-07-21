@@ -43,8 +43,7 @@ export class ContenedorComponent implements OnInit {
           this.ultimo = this.listaSolapas.length-1;
           break;
         default:
-          this.listaSolapas=this.listaSolapasComoEstamos;
-          this.ultimo = this.listaSolapas.length-1;
+          this.ultimo = this.listaSolapas.length;
           break;
       }
     });

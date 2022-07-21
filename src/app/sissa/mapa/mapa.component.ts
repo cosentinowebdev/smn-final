@@ -69,43 +69,27 @@ export class MapaComponent implements AfterViewInit {
 
       this.idTipo = params["idTipo"];
       this.idEndpoint = params["idEndpoint"];
-      console.log(this.idTipo);
-      console.log(this.idEndpoint);
-      if (this.map) {
-        this.map.remove();
-        // this.initMap();
-      }
-
-      // this.llamaServicio(this.data);
+      // if (this.map) {
+      //   this.map.remove();
+      // }
     });
-    
-
    }
 
 
   ngOnInit(): void {
-    // console.log("data");
-    // console.log(this.data);
-    // this.llamaServicio(this.data);
     this.modal = document.getElementById("modal");
     this.modal.style.display = "block";
   }
   llamaServicio(data:any){
-    console.log("llamaServicio");
     console.log(this.idEndpoint);
     switch (this.idEndpoint) {
       case 'prueba-ruster':
         this.sissaInfoService.getRaster().subscribe(arg =>{
-          console.log(arg.geotiff);
           this.parametros=[];
           arg.legend.forEach((element: any) => {
             let paramet = new parametro(element)
             this.parametros.push(paramet)
-          });
-          console.log(arg.legend);
-          
-          console.log(this.parametros);
-          
+          });        
           const preblob = this.converBase64toBlob(arg.geotiff,'image/tiff');
           var blobURL = URL.createObjectURL(preblob);
           this.loadGeotiffAsLayer(blobURL);
@@ -130,7 +114,6 @@ export class MapaComponent implements AfterViewInit {
                 color.push(element.color)
               }
             });
-            console.log(color);
             var colors = d3.scaleQuantize<string, number>()
             .domain([0,60])
             .range(color.reverse());
@@ -155,6 +138,7 @@ export class MapaComponent implements AfterViewInit {
 
       case 'hace-cuanto-no-llueve':
         //feat geo
+        
           this.sissaInfoService.haceCuantoQueNoLLueve(data.fecha,data.cantidadPrecipitaciones).subscribe(arg => {
             let res:any = arg.geojson;
             this.parametros=[];
@@ -169,7 +153,6 @@ export class MapaComponent implements AfterViewInit {
                 color.push(element.color)
               }
             });
-            console.log(color);
             var colors = d3.scaleQuantize<string, number>()
             .domain([0,60])
             .range(color.reverse());
@@ -191,11 +174,15 @@ export class MapaComponent implements AfterViewInit {
           });
             
         break;
-
+      case 'un-periodo-esi':
+        console.log(data);
+        // this.sissaInfoService.unPeriodoESI()
+        //   .subscribe(arg => this.property = arg);
+        
+        break;
       default:
         this.sissaInfoService.getRaster().subscribe(
           res=>{
-            console.log(res);
             this.parametros=[];
             res.parametros.forEach((element: any) => {
               let paramet = new parametro(element)
@@ -232,15 +219,17 @@ export class MapaComponent implements AfterViewInit {
     
     
     if (this.map) {
-      console.log(changes.data.currentValue);
-      console.log(document.getElementsByClassName("legend"));
+      this.modal.style.display = "block";
       const elementoHTML:HTMLElement = document.getElementsByClassName("legend")[0] as HTMLElement;
-      elementoHTML.remove();
+      if(elementoHTML){
+        elementoHTML.remove();
+      }
+
       this.map.remove();
+
       this.initMap();
       this.llamaServicio(changes.data.currentValue);
     }else{
-      console.log(changes.data.currentValue);
       this.initMap();
       this.llamaServicio(changes.data.currentValue);
     }
@@ -318,7 +307,6 @@ export class MapaComponent implements AfterViewInit {
     .domain([0,60])
     .range(color.reverse());
     let scale = d3.scaleSequential(d3.interpolateOrRd);
-    console.log(scale);
     this.colorScale = scale;
     var layer = new GeoRasterLayer({
       georaster: raster,
@@ -418,7 +406,6 @@ export class MapaComponent implements AfterViewInit {
   // }
 
   getHistogram() {
-    console.log("inside gethistogram")
     const scaleType = 'ratio';
     const numClasses = 5;
     const classType = 'equal-interval';
